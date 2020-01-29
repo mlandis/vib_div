@@ -1,0 +1,51 @@
+#
+fp = "/Users/mlandis/projects/viburnum_phylogeo/"
+out_fp = fp + "output/biogeo/workbox/"
+#fn = "viburnum.w_backbone_0.w_bg_5.w_biome_4"
+#fn = "out.viburnum.t165.f5.w_bg_5.w_biome_4_test"
+#fn = "outflat1.viburnum.t165.f5.w_bg_5.w_biome_4.w_stoch"
+#fn = "outflat_dir1.viburnum.t165.f5.w_bg_5.w_biome_4.w_stoch"
+#fn = "outflat3.viburnum.t165.f5.w_bg_5.w_biome_4.w_stoch"
+fn = "outq.viburnum.t165.f5.w_bg_5.w_biome_4"
+fn = "outp.viburnum.t165.f5.w_bg_5.w_biome_4"
+fn = "vib_dirgamma_1_ucln.viburnum.t165.f5.w_bg_5.w_biome_4"
+#fn = "vib_dirgamma_1.viburnum.t165.f5.w_bg_5.w_biome_4"
+#fn = "test"
+
+f_burn = 0.5
+tree_trace = readTreeTrace(out_fp+fn+".tre", treetype="clock", burnin=f_burn)
+#tree_trace.setBurnin(0.75)
+mcc_tree = mccTree(trace=tree_trace, file=out_fp+fn+".mcc.tre", mean=false)
+#mcc_tree <- fnPruneTree(mcc_tree, pruneFossils=true)
+
+##mcc_tree = readTrees(out_fp+fn+".mcc.tre")[1]
+
+state_trace_bg = readAncestralStateTrace(file=out_fp+fn+".bg.states.txt", separator="\t")
+state_trace_biome = readAncestralStateTrace(file=out_fp+fn+".biome.states.txt", separator="\t")
+state_tree_trace = readAncestralStateTreeTrace(file=out_fp+fn+".tre", treetype="clock")
+n_burn = floor(f_burn * state_tree_trace.getNumberSamples())
+#n_burn = 0
+
+"biogeography..."
+bg_tree = ancestralStateTree(tree=mcc_tree,
+                   tree_trace=state_tree_trace,
+                   ancestral_state_trace_vector=state_trace_bg,
+                   include_start_states=true,
+                   file=out_fp+fn+".bg.ase.tre",
+                   summary_statistic="MAP",
+                   burnin=n_burn,
+                   site=1)
+
+
+"biomes..."
+biome_tree = ancestralStateTree(tree=mcc_tree,
+                   tree_trace=state_tree_trace,
+                   ancestral_state_trace_vector=state_trace_biome,
+                   include_start_states=false,
+                   file=out_fp+fn+".biome.ase.tre",
+                   summary_statistic="MAP",
+                   burnin=n_burn,
+                   site=1)
+
+
+q()

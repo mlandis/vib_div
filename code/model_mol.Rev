@@ -1,0 +1,50 @@
+# molecular model
+
+clock_mol_base ~ dnLoguniform(1e-6, 1e2)
+clock_mol_base.setValue(1e-3)
+mv[mvi++] = mvScale(clock_mol_base, lambda=0.2, weight=15)
+mv[mvi++] = mvScale(clock_mol_base, lambda=0.5, weight=8)
+mv[mvi++] = mvScale(clock_mol_base, lambda=1.0, weight=2)
+
+n_rate_categories <- 50
+rate_probs <- simplex(rep(1,n_rate_categories))
+step_size = 5
+branch_rate_sd ~ dnExp(1)
+mv[mvi++] = mvScale(branch_rate_sd, lambda=1, weight=2)
+mv[mvi++] = mvScale(branch_rate_sd, lambda=0.2, weight=10)
+branch_rate_mean := ln( clock_mol_base ) - 0.5 * branch_rate_sd^2
+branch_rate_categories := fnDiscretizeDistribution(dnLognormal(branch_rate_mean, branch_rate_sd), n_rate_categories)
+
+for (j in 1:n_branches) {
+    branch_rates_shared[j] ~ dnMixture(branch_rate_categories, rate_probs)
+    mv[mvi++] = mvMixtureAllocation(branch_rates_shared[j], weight=1, delta=step_size)
+}
+
+for (i in 1:n_parts) {
+
+    er[i] ~ dnDirichlet(rep(1., 6))
+    mv[mvi++] = mvSimplexElementScale(er[i], alpha=10., weight=5)
+
+    bf[i] ~ dnDirichlet(rep(1., 4))
+    mv[mvi++] = mvSimplexElementScale(bf[i], alpha=10., weight=5)
+
+    Q[i] := fnGTR(er[i], bf[i])
+
+    alpha[i] ~ dnUniform(0,50)
+    site_rates[i] := fnDiscretizeGamma(alpha[i],alpha[i],4)
+    mv[mvi++] = mvScale(alpha[i], weight=5)
+
+    clock_mol_mult[i] ~ dnGamma(2,2)
+    mv[mvi++] = mvScale(clock_mol_mult[i], weight=5, lambda=0.5)
+    branch_rates[i] := clock_mol_mult[i] * branch_rates_shared
+
+    seq_mol[i] ~ dnPhyloCTMC(tree=tree,
+                          Q=Q[i],
+                          branchRates=branch_rates[i],
+                          siteRates=site_rates[i],
+                          nSites=dat_mol[i].nchar(),
+                          type="DNA")
+
+    seq_mol[i].clamp(dat_mol[i])
+}
+

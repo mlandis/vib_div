@@ -1,0 +1,86 @@
+
+#########
+# MODEL #
+#########
+
+# Magallón, S. , Gómez‐Acevedo, S. , Sánchez‐Reyes, L. L. and Hernández‐Hernández, T. (2015), A metacalibrated time‐tree documents the early rise of flowering plant phylogenetic diversity. New Phytol, 207: 437-453. doi:10.1111/nph.13264I
+# Adoxaceae: UCLN med 70.94 (52.71, 85.74) Ma
+
+# Bell, C. D. and Donoghue, M. J. (2005), Dating the Dipsacales: comparing models, genes, and evolutionary implications. Am. J. Bot., 92: 284-296. doi:10.3732/ajb.92.2.284
+# Adoxaceae: 70.59 (49.73 to 92.92) Ma
+
+origin_age_raw ~ dnNormal(71, 21.6/2, min=52.71, max=85.74)
+origin_age_raw.setValue(85)
+mv[mvi++] = mvSlide(origin_age_raw, delta=1, weight=10)
+mv[mvi++] = mvSlide(origin_age_raw, delta=5, weight=10)
+
+origin_age := abs(origin_age_raw)
+
+# dumb tree hyperpriors
+div_sd <- 0.5
+div_mean := ln( abs( ln(n_taxa/2) ) / 66) - 0.5 * div_sd^2
+diversification ~ dnLognormal( mean=div_mean, sd=div_sd )
+turnover ~ dnBeta(1,1)
+
+birth := diversification / abs(1.0 - turnover)
+death := turnover * birth
+
+psi_f ~ dnBeta(1,100)
+psi := birth * psi_f
+rho <- 1.
+
+# init values
+
+#root_age.setValue(tree_init.rootAge())
+#birth.setValue(0.5)
+#death.setValue(0.3)
+psi_f.setValue(0.01)
+
+# tree hyperprior proposals
+tune_targets = [ 0.1, 0.44, 0.65 ]
+tune_weights = [ 2, 5, 5 ]
+for (i in 1:tune_targets.size()) {
+    #mv[mvi++] = mvScale(birth,    weight=tune_weights[i], tuneTarget=tune_targets[i])
+    #mv[mvi++] = mvScale(death,    weight=tune_weights[i], tuneTarget=tune_targets[i])
+    mv[mvi++] = mvScale(diversification,    weight=tune_weights[i], tuneTarget=tune_targets[i], lambda=0.5)
+    mv[mvi++] = mvSlide(turnover, weight=tune_weights[i], tuneTarget=tune_targets[i], delta=0.2)
+    mv[mvi++] = mvSlide(psi_f, weight=tune_weights[i], tuneTarget=tune_targets[i], delta=0.2)
+    #mv[mvi++] = mvScale(root_age, weight=tune_weights[i], tuneTarget=tune_targets[i])
+    #mv[mvi++] = mvSlide(root_age, weight=tune_weights[i], tuneTarget=tune_targets[i])
+}
+
+
+# tree prior
+tree_base = dnFBDP(lambda=birth, mu=death, psi=psi, rho=rho, originAge=origin_age, taxa=taxa, condition="survival")
+
+tree ~ dnConstrainedTopology(treeDistribution=tree_base, backbone=tree_backbone, constraints=constraints)
+
+tree.setValue(tree_init)
+
+
+# fossil age constraints
+for (i in 1:intervals.size()) {
+    taxon = intervals[i][1]
+    a_i = intervals[i][2]
+    b_i = intervals[i][3]
+    t[i] := tmrca(tree, clade(taxon))
+    fossil[i] ~ dnUniform(t[i] - b_i, t[i] - a_i)
+    fossil[i].clamp(0)
+}
+mv[mvi++] = mvFossilTimeSlideUniform(tree, origin_age, weight=25)
+
+# topology moves
+mv[mvi++] = mvNNI(tree, weight=n_branches/2)
+mv[mvi++] = mvFNPR(tree, weight=n_branches/4)
+mv[mvi++] = mvNodeTimeSlideUniform(tree, weight=n_branches*2)
+mv[mvi++] = mvCollapseExpandFossilBranch(tree, origin_age, weight=10)
+mv[mvi++] = mvRootTimeSlideUniform(tree, origin_age, weight=30)
+mv[mvi++] = mvSubtreeScale( tree, weight=30 )
+
+tree_length := tree.treeLength()
+root_age := tree.rootAge()
+
+
+clade_extant <- clade( "V_clemensiae", "V_lantanoides", "V_lentago", "V_tinus", "V_molle", "V_orientale")
+tmrca_extant := tmrca( tree, clade_extant, false )
+

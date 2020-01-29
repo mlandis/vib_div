@@ -1,0 +1,26 @@
+
+n_biome_states = n_biomes * (n_biomes-1)
+
+clock_biome ~ dnLoguniform(1e-6, 1e3)
+clock_biome.setValue(1e-2)
+mv[mvi++] = mvScale(clock_biome, lambda=0.2, weight=5)
+mv[mvi++] = mvScale(clock_biome, lambda=1.0, weight=2)
+
+r_biome ~ dnDirichlet(rep(1, n_biome_states))
+mv[mvi++] = mvSimplex(r_biome, alpha=20, weight=3)
+mv[mvi++] = mvSimplexElementScale(r_biome, alpha=20, weight=5)
+
+pi_cold := abs(pi_cold_100 / 100)
+pi_warm := abs(1.0 - pi_cold)
+rf_biome := simplex( pi_warm/3, pi_warm/3, pi_warm/3, pi_cold )
+
+Q_biome := fnFreeK(r_biome)
+
+m_biome ~ dnPhyloCTMC(tree=tree,
+                      Q=Q_biome,
+                      branchRates=clock_biome,
+                      nSites=1,
+                      rootFrequencies=rf_biome,
+                      type="Standard")
+
+m_biome.clamp(dat_biome)

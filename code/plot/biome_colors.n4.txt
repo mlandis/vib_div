@@ -1,0 +1,8 @@
+name,state,range,color
+"Tropical",0,"0","red"
+"W.Temp",1,"1","forestgreen"
+"Cloud",2,"2","deepskyblue"
+"Fr.Temp",3,"3","darkblue"
+"Tropical/W.Temp",4,"(0 1)","magenta"
+"W.Temp/Fr.Temp",5,"(1 3)","orange"
+

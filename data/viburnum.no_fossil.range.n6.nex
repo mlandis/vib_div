@@ -1,0 +1,185 @@
+#NEXUS
+
+Begin data;
+Dimensions ntax=173 nchar=1;
+Format datatype=Standard symbols="0123456ABCDEFGHIJKLMNO" missing=? gap=-;
+
+Matrix
+	V_acerifolium			4
+	V_acutifolium			5
+	V_adenophorum			2
+	V_amplificatum			1
+	V_anabaptista			6
+	V_anamensis			    (1 2) [ 180521: 2 -> (1 2) ]
+	V_atrocyaneum			2
+	V_australe				5
+	V_awabuki				2
+	V_ayavacense			6
+	V_beccarii				1
+	V_betulifolium			2
+	V_bitchiuense			2
+	V_blandum				5
+	V_brachyandrum			2
+	V_brachybotryum			2
+	V_bracteatum			4
+	V_brevipes				2
+	V_buddleifolium			2
+	V_burejaeticum			2
+	V_calvum				2
+	V_carlesii				2
+	V_cassinoides			4
+	V_caudatum				5
+	V_chingii				2
+	V_ciliatum				5
+	V_cinnamomifolium		2
+	V_clemensiae			1
+	V_colebrookeanum		1
+	V_coriaceum				1
+	V_corylifolium			2
+	V_corymbiflorum			2
+	V_costaricanum			5
+	V_cotinifolium			2
+	V_cylindricum			2
+	V_davidii				2
+	V_dentatum				4
+	V_dilatatum				2
+	V_discolor				5
+	V_disjunctum			5
+	V_divaricatum			6
+	V_edule					4
+	V_elatum				5
+	V_ellipticum			4
+	V_erosum				2
+	V_erubescens			2
+	V_farreri				2
+	V_flavescens			2
+	V_foetens				2
+	V_foetidum				2
+	V_formosanum			2
+	V_furcatum				2
+	V_glabratum				6
+	V_grandiflorum			2
+	V_hallii				6
+	V_hartwegii				5
+	V_hebanthum				1
+	V_henryi				2
+	V_hispidulum			1
+	V_hupehense				2
+	V_ichangense			2
+	V_inopinatum			1
+	V_integrifolium			2
+	V_jamesonii				6
+	V_japonicum				2
+	V_jucundum				5
+	V_kansuense				2
+	V_koreanum				2
+	V_lancifolium			2
+	V_lantana				3
+	V_lantanoides			4
+	V_lasiophyllum			6
+	V_lautum				5
+	V_lentago				4
+	V_lepidotulum			A [ 180521: changed 2 -> 7 ]
+	V_lobophyllum			2
+	V_loeseneri				5
+	V_lutescens				1
+	V_luzonicum				2
+	V_macrocephalum			2
+	V_melanocarpum			2
+	V_microcarpum			5
+	V_microphyllum			5
+	V_molle					4
+	V_mongolicum			2
+	V_mullaha				2
+	V_nervosum				2
+	V_nudum					4
+	V_obtectum				6
+	V_obtusatum				5
+	V_odoratissimum			A [ 180521: changed 2 -> 7 ]
+	V_oliganthum			2
+	V_opulus				3
+	V_orientale				3
+	V_parvifolium			2
+	V_pichinchense			6
+	V_plicatum				2
+	V_propinquum			2
+	V_prunifolium			4
+	V_punctatum				1
+	V_rafinesquianum		4
+	V_recognitum			4
+	V_rhytidophyllum		2
+	V_rigidum				3
+	V_rufidulum				4
+	V_sambucinum			1
+	V_sargentii				2
+	V_scabrellum			4
+	V_schensianum			2
+	V_seemenii				6
+	V_sempervirens			2
+	V_setigerum				2
+	V_sieboldii				2
+	V_stellato_tomentosum	5
+	V_stenocalyx			5
+	V_stipitatum			6
+	V_subalpinum			2
+	V_subsessile			6
+	V_sulcatum				5
+	V_suspensum				2
+	V_sympodiale			2
+	V_taitoense				2
+	V_taiwanianum			2
+	V_tashiroi				2
+	V_ternatum				2
+	V_tinoides				6
+	V_tinus					3
+	V_toronis				6
+	V_trilobum				4
+	V_triphyllum			6
+	V_undulatum				6
+	V_urceolatum			2
+	V_utile					2
+	V_veitchii				2
+	V_venustum				5
+	V_vernicosum			1
+	V_villosum				5
+	V_wrightii				2
+	V_obovatum				4
+	V_congestum				2
+	V_glomeratum			2
+	V_chinshanense			2
+	V_yunnanense			2
+	V_tengyuehense			2
+	V_longipedunculatum		2
+	V_shweliense			2
+	V_brevitubum			2
+	V_wardii				2
+	V_omeiense				2
+	V_hanceanum				2
+	V_amplifolium			2
+	V_laterale				2
+	V_junghunii				1
+	V_pyramidatum			2 
+	V_triplinerve			2
+	V_hainanense			2 
+	V_chunii				2
+	V_fordiae				2
+	V_longiradiatum			2
+	V_squamulosum			2
+	V_dalzielii				2
+	V_phlebotrichum			2 
+	V_glaberrimum			1
+	V_leiocarpum			1
+	V_hondurense			5
+	V_treleasei				3
+	V_garrettii				1
+	V_maculatum				3
+    Valvatotinus_NWT        (0 1 2 3 4 5 6 A B C D E F G H I J K L M N O)
+    Valvatotinus_PB         (0 1 2 3 4 5 6 A B C D E F G H I J K L M N O)
+    Valvatotinus_IS         (0 1 2 3 4 5 6 A B C D E F G H I J K L M N O)
+    Viburnum_BC             (0 1 2 3 4 5 6 A B C D E F G H I J K L M N O)
+    Porphyrotinus_CO        (0 1 2 3 4 5 6 A B C D E F G H I J K L M N O)
+;
+End;
+
+
+

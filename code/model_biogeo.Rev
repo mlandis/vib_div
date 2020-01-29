@@ -1,0 +1,100 @@
+# get helper variables
+n_bg_epochs = times_bg.size()
+
+# extirpation rates
+er_base_sd <- 0.1
+er_base_mean <- ln(abs(1.0)) -0.5*er_base_sd^2
+er_base ~ dnLognormal(er_base_mean, er_base_sd)
+er_base.setValue(0.1)
+mv[mvi++] = mvScale(er_base, weight=5)
+
+for (i in 1:n_areas) {
+    for (j in 1:n_areas) {
+        er_bg[i][j] <- abs(0)
+    er_bg[i][i] := er_base
+    }
+}
+
+# dispersal rates
+if (use_epochs) {
+    ldd ~ dnBeta(1,1)
+    ldd.setValue(0.1)
+    mv[mvi++] = mvSlide(ldd, weight=5, delta=0.2)
+}
+
+for (k in 1:n_bg_epochs) {
+    for (i in 1:n_areas) {
+        for (j in 1:n_areas) {
+            if (connectivity_bg[k][i][j] == 1.0 || use_epochs == false) {
+                dr_bg[k][i][j] <- abs(1)
+            } else {
+                dr_bg[k][i][j] := ldd
+            }
+        }
+    }
+
+    # rate matrix
+    Q_DEC[k] := fnDECRateMatrix(dispersalRates=dr_bg[k],
+                                extirpationRates=er_bg,
+                                maxRangeSize=max_areas,
+                                nullRange="CondSurv")
+}
+
+# epoch times
+for (k in 1:n_bg_epochs) {
+    bg_times[k] <- times_bg[k][2]
+}
+Q_DEC_epoch := fnEpoch( Q_DEC, bg_times, rep(1., n_bg_epochs) )
+
+# clado probs
+clado_event_types = ["s","a"]
+p_sympatry ~ dnBeta(1,1)
+p_sympatry.setValue(0.5)
+mv[mvi++] = mvSlide(p_sympatry, weight=5, delta=0.2)
+p_allopatry := abs(1.0 - p_sympatry)
+clado_event_probs := simplex( p_sympatry, p_allopatry )
+P_DEC := fnDECCladoProbs(eventProbs=clado_event_probs,
+                              eventTypes=clado_event_types,
+                              numCharacters=n_areas,
+                              maxRangeSize=max_areas)
+
+# root freqs
+rf_bg_raw <- rep(1, n_states)
+
+
+if (mask_rf && n_areas==5) {
+    rf_bg_raw[ 7+1] <- 0. # SE Asia + Eur
+    rf_bg_raw[ 9+1] <- 0. # SE Asia + Nor Am
+    rf_bg_raw[12+1] <- 0. # SE Asia + Lat Am
+    rf_bg_raw[13+1] <- 0. # E Asia + Lat Am
+    rf_bg_raw[14+1] <- 0. # Eur + Lat Am
+}
+if (mask_rf && n_areas==6) {
+    rf_bg_raw <- rep(0, n_states)
+    valid_states_n6 = [ 1, 2, 3, 4, 5, 6, 8, 10, 12, 13, 17 ]
+    for (s in valid_states_n6) {
+        rf_bg_raw[s+1] <- 1
+    }
+}
+
+rf_bg <- simplex(rf_bg_raw)
+
+# clock
+clock_bg ~ dnLoguniform( min=1e-6, max=1e2 )
+clock_bg.setValue(1e-2)
+mv[mvi++] = mvScale(clock_bg, lambda=0.2, weight=5)
+mv[mvi++] = mvScale(clock_bg, weight=2)
+
+
+# the model
+m_bg ~ dnPhyloCTMCClado(tree=tree,
+                        Q=Q_DEC_epoch,
+                        rootFrequencies=rf_bg,
+                        cladoProbs=P_DEC,
+                        branchRates=clock_bg,
+                        nSites=1,
+                        type="Standard")
+m_bg.clamp(dat_bg_n)
+
+
+

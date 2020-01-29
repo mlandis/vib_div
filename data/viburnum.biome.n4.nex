@@ -1,0 +1,188 @@
+#NEXUS
+
+Begin data;
+Dimensions ntax=173 nchar=1;
+Format datatype=Standard symbols="0123" missing=? gap=-;
+
+Matrix
+
+       [ 0: Tropical (H)       ]
+       [ 1: Lucidophyllous (L) ]
+       [ 2: Cloud (C)          ]
+       [ 3: Temperate (T)      ]
+
+       V_acerifolium            3
+       V_acutifolium            2
+       V_adenophorum            1
+       V_amplificatum           0
+       V_amplifolium            1
+       V_anabaptista            2
+       V_anamensis              1
+       V_atrocyaneum            1 [ 180521: 3 -> 1 ]
+       V_australe               1 [ 180521: 3 -> 1 ]
+       V_awabuki                1
+       V_ayavacense             2
+       V_beccarii               0
+       V_betulifolium           3
+       V_bitchiuense            3
+       V_blandum                2
+       V_brachyandrum           1 [ 180521: 3 -> 1 ]
+       V_brachybotryum          1
+       V_bracteatum             3
+       V_brevipes               (1 3)
+       V_brevitubum             (1 3)
+       V_buddleifolium          3
+       V_burejaeticum           3
+       V_calvum                 (1 3) [ 180521: 3 - > (1 3) ]
+       V_carlesii               3
+       V_cassinoides            3
+       V_caudatum               2
+       V_chingii                (1 3)
+       V_chinshanense           (1 3)
+       V_chunii                 1
+       V_ciliatum               2
+       V_cinnamomifolium        1
+       V_clemensiae             0
+       V_colebrookeanum         0
+       V_congestum              (1 3)
+       V_coriaceum              0
+       V_corylifolium           1
+       V_corymbiflorum          1
+       V_costaricanum           2
+       V_cotinifolium           3
+       V_cylindricum            1
+       V_dalzielii              (1 3)
+       V_davidii                1
+       V_dentatum               3
+       V_dilatatum              3
+       V_discolor               2
+       V_disjunctum             2
+       V_divaricatum            2
+       V_edule                  3
+       V_elatum                 2
+       V_ellipticum             1 [ 180521: 3 -> 1 ]
+       V_erosum                 3
+       V_erubescens             3
+       V_farreri                3
+       V_flavescens             3       
+       V_foetens                3
+       V_foetidum               1
+       V_fordiae                1
+       V_formosanum             1
+       V_furcatum               3
+       V_garrettii              (0 1) [ 180521: 0 -> (0 1) ]
+       V_glaberrimum            0
+       V_glabratum              2
+       V_glomeratum             3
+       V_grandiflorum           3
+       V_hainanense             1
+       V_hallii                 2
+       V_hanceanum              1
+       V_hartwegii              2
+       V_hebanthum              0 
+       V_henryi                 1
+       V_hispidulum             0
+       V_hondurense             2
+       V_hupehense              3
+       V_ichangense             3
+       V_inopinatum             1
+       V_integrifolium          1
+       V_jamesonii              2
+       V_japonicum              1
+       V_jucundum               2
+       V_junghunii              1
+       V_kansuense              3
+       V_koreanum               3
+       V_lancifolium            1 
+       V_lantana                3
+       V_lantanoides            3
+       V_lasiophyllum           2
+       V_laterale               1
+       V_lautum                 2
+       V_leiocarpum             1
+       V_lentago                3
+       V_lepidotulum            0
+       V_lobophyllum            3
+       V_loeseneri              2
+       V_longipedunculatum      1
+       V_longiradiatum          (1 3)
+       V_lutescens              0
+       V_luzonicum              1
+       V_macrocephalum          3
+       V_maculatum              3 
+       V_melanocarpum           3
+       V_microcarpum            2
+       V_microphyllum           2
+       V_molle                  3
+       V_mongolicum             3
+       V_mullaha                3 [ 180521: 1 -> 3 ]
+       V_nervosum               3
+       V_nudum                  1 [ 180521: (1 3) -> 1 ]
+       V_obovatum               1 [ 180521: (1 3) -> 1 ]
+       V_obtectum               2
+       V_obtusatum              2
+       V_odoratissimum          1
+       V_oliganthum             3 [ 180521: (1 3) -> 3 ]
+       V_omeiense               (1 3)
+       V_opulus                 3
+       V_orientale              3
+       V_parvifolium            1 [ 180521: 3 -> 1 ]
+       V_phlebotrichum          3
+       V_pichinchense           2
+       V_plicatum               3
+       V_propinquum             1
+       V_prunifolium            3
+       V_punctatum              0
+       V_pyramidatum            1
+       V_rafinesquianum         3
+       V_recognitum             3 
+       V_rhytidophyllum         3
+       V_rigidum                1
+       V_rufidulum              (1 3) 
+       V_sambucinum             0
+       V_sargentii              3
+       V_scabrellum             1 [ 180521: 3 -> 1 ]
+       V_schensianum            3
+       V_seemenii               2
+       V_sempervirens           1
+       V_setigerum              3
+       V_shweliense             (1 3)
+       V_sieboldii              3
+       V_squamulosum            1
+       V_stellato_tomentosum    2
+       V_stenocalyx             2
+       V_stipitatum             2
+       V_subalpinum             3 
+       V_subsessile             2
+       V_sulcatum               2
+       V_suspensum              1
+       V_sympodiale             3
+       V_taitoense              1
+       V_taiwanianum            1
+       V_tashiroi               1
+       V_tengyuehense           (1 3)
+       V_ternatum               1
+       V_tinoides               2
+       V_tinus                  1
+       V_toronis                2
+       V_treleasei              1
+       V_trilobum               3
+       V_triphyllum             2
+       V_triplinerve            1
+       V_undulatum              2
+       V_urceolatum             3
+       V_utile                  3
+       V_veitchii               3
+       V_venustum               2
+       V_vernicosum             0
+       V_villosum               2
+       V_wardii                 1
+       V_wrightii               3
+       V_yunnanense             1
+       Valvatotinus_NWT         1
+       Valvatotinus_PB          1 [ 180521: (0 1) -> 1 ]
+       Valvatotinus_IS          (1 3)
+       Viburnum_BC              1
+       Porphyrotinus_CO         1
+       ;
+End;

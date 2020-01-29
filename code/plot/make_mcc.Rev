@@ -1,0 +1,56 @@
+if (!exists("fn"))          fn = "out.1.t163.f5.radseq_only" # out.1.t163.f5.radseq_only
+if (!exists("make_states")) make_states = true
+
+# Location of tree files
+out_fp = "../../output/"
+
+# Output tree files already have burnin removed and iterations reindexed, starting from 0
+f_burn = 0.0
+
+print("Processing output for fn = \"" + fn + "\"")
+print("--> Reading tree trace file")
+tree_trace = readTreeTrace(out_fp+fn, treetype="clock", burnin=f_burn)
+
+print("--> Constructing various consensus trees")
+mcc_tree = mccTree(trace=tree_trace, file=out_fp+fn+".mcc.tre", positiveBranchLengths=true)
+map_tree = mapTree(trace=tree_trace, file=out_fp+fn+".map.tre", positiveBranchLengths=true)
+con_tree = consensusTree(trace=tree_trace, file=out_fp+fn+".con.tre", cutoff=0.5, positiveBranchLengths=true)
+
+if (make_states) {
+    print("--> Reading ancestral biome estimate trace file")
+    state_trace_biome = readAncestralStateTrace(file=out_fp+fn+".biome.states.txt", separator="\t")
+    print("--> Reading ancestral range estimate trace file")
+    state_trace_bg    = readAncestralStateTrace(file=out_fp+fn+".bg.states.txt", separator="\t")
+    print("--> Re-reading tree trace file for ancestral states")
+    state_tree_trace  = readAncestralStateTreeTrace(file=out_fp+fn+".trees", treetype="clock")
+
+    n_burn = floor(f_burn * state_tree_trace.getNumberSamples())
+
+    print("--> Building ancestral biome estimates (this can take a while)")
+    biome_tree = ancestralStateTree(tree=mcc_tree,
+                       tree_trace=state_tree_trace,
+                       ancestral_state_trace_vector=state_trace_biome,
+                       include_start_states=false,
+                       file=out_fp+fn+".biome.ase.tre",
+                       summary_statistic="MAP",
+                       reconstruction="conditional",
+                       burnin=n_burn,
+                       nStates=3,
+                       site=1)
+
+    print("--> Building ancestral range estimates (this can take a while)")
+    bg_tree = ancestralStateTree(tree=mcc_tree,
+                       tree_trace=state_tree_trace,
+                       ancestral_state_trace_vector=state_trace_bg,
+                       include_start_states=true,
+                       file=out_fp+fn+".bg.ase.tre",
+                       summary_statistic="MAP",
+                       reconstruction="conditional",
+                       burnin=n_burn,
+                       nStates=3,
+                       site=1)
+}
+print("...done!")
+print("")
+
+q()

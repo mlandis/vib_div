@@ -1,0 +1,81 @@
+# Valvatotinus clade contains PB and NWT pollen
+# MJL 170828: added maculatum
+
+# Valvatotinus clade contains IS pollen, but only in Ic subclades
+clade_lentago = clade(
+    "V_cassinoides",
+    "V_nudum",
+    "V_lentago",
+    "V_elatum",
+    "V_obovatum",
+    "V_prunifolium",
+    "V_rufidulum",
+    "Valvatotinus_IS")
+
+clade_euviburnum_Ic = clade(
+    "V_mongolicum",
+    "V_burejaeticum",
+    "V_lantana",
+    "V_maculatum",
+    "V_glomeratum",
+    "V_veitchii",
+    "V_rhytidophyllum",
+    "V_buddleifolium",
+    "V_chinshanense",
+    "Valvatotinus_IS")
+
+clade_valvatotinus_Ic = clade(
+    clade_lentago,
+    clade_euviburnum_Ic,
+    optional_match=true
+)
+
+clade_valvatotinus_all = clade(
+    clade_lentago,
+    clade_euviburnum_Ic,
+    "V_punctatum",
+    "V_lepidotulum",
+    "V_cotinifolium",
+    "V_macrocephalum",
+    "V_utile",
+    "V_schensianum",
+    "V_congestum",
+    "V_bitchiuense",
+    "V_carlesii",
+    "Valvatotinus_PB",
+    "Valvatotinus_NWT",
+    "Valvatotinus_IS"
+)
+
+# 1b fossils cannot be found in 1c clades
+clade_valvatotinus_NWT_not_lentago = clade(
+    clade_lentago,
+    "Valvatotinus_NWT",
+    negative=true
+)
+clade_valvatotinus_NWT_not_euviburnum_Ic = clade(
+    clade_euviburnum_Ic,
+    "Valvatotinus_NWT",
+    negative=true
+)
+clade_valvatotinus_PB_not_lentago = clade(
+    clade_lentago,
+    "Valvatotinus_PB",
+    negative=true
+)
+clade_valvatotinus_PB_not_euviburnum_Ic = clade(
+    clade_euviburnum_Ic,
+    "Valvatotinus_PB",
+    negative=true
+)
+    
+
+
+constraints = [ 
+    clade_valvatotinus_Ic,
+    clade_valvatotinus_NWT_not_lentago,
+    clade_valvatotinus_NWT_not_euviburnum_Ic,
+    clade_valvatotinus_PB_not_lentago,
+    clade_valvatotinus_PB_not_euviburnum_Ic,
+    clade_valvatotinus_all ]
+

@@ -1,0 +1,36 @@
+fp = "/Users/mlandis/projects/viburnum_phylogeo/"
+out_fp = fp + "output/biogeo/"
+#fn = "viburnum.w_backbone_1.w_bg_5.w_biome_4"
+fn = "viburnum.w_backbone_1.w_bg_3.w_biome_2"
+
+tree_trace = readTreeTrace(out_fp+fn+".tre", treetype="clock")
+tree_trace.setBurnin(0.5)
+mcc_tree = mccTree(trace=tree_trace,
+        file=out_fp+fn+".mcc.tre")
+
+#mcc_tree = readTrees(out_fp+fn+".mcc.tre")[1]
+
+state_trace_bg = readAncestralStateTrace(file=out_fp+fn+".bg.states.txt", separator="\t")
+state_trace_biome = readAncestralStateTrace(file=out_fp+fn+".biome.states.txt", separator="\t")
+state_tree_trace = readAncestralStateTreeTrace(file=out_fp+fn+".tre", treetype="clock")
+n_burn = floor(0.5 * state_tree_trace.getNumberSamples())
+
+"biogeography..."
+bg_tree = ancestralStateTree(tree=mcc_tree,
+                   ancestral_state_trace_vector=state_trace_bg,
+                   include_start_states=true,
+                   tree_trace=state_tree_trace,
+                   file=out_fp+fn+".bg.ase.tre",
+                   burnin=n_burn,
+                   site=0)
+
+"biomes..."
+biome_treee = ancestralStateTree(tree=mcc_tree,
+                   ancestral_state_trace_vector=state_trace_biome,
+                   include_start_states=false,
+                   tree_trace=state_tree_trace,
+                   file=out_fp+fn+".biome.ase.tre",
+                   burnin=n_burn,
+                   site=0)
+
+q()
