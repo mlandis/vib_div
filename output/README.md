@@ -1,5 +1,7 @@
 Two independent MCMC chains were run (`out.1` and `out.2`) for each of two main analysis settings (Complete [no special label] or Masked [labeled with `mask_fossil_states`]). For the Complete setting, the tree distributions underwent three forms of taxon filtering (`no_fossil` filtered out the 5 fossil taxa; `no_fossil_unsequenced` filtered out the 5 fossil and 10 morphologically placed taxa; `radseq_only` filtered out all taxa except those with RADseq). All output is based on 2001 posterior samples that has already had burn-in removed. Several types of output were generated for each MCMC analysis, which are most easily distinguished by their file suffixes.
 
+The `sensitivity_test` contains the ancestral state estimates we used to assess how fossil taxa and their biome states influenced our ancestral biome estimates.
+
 File types and suffixes:
 - `model.log` is the posterior distribution of model parameters
 - `biome.states.txt` is the ancestral biome estimates indexed by node
