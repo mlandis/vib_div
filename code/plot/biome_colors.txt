@@ -1,7 +1,0 @@
-biome,color
-"H","red"
-"L","forestgreen"
-"C","deepskyblue"
-"T","darkblue"
-"LT?","magenta"
-"HL?","orange"
