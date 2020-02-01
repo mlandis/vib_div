@@ -2,80 +2,54 @@
 # SETTINGS #
 ############
 
-if (!exists("job_str"))       job_str = "test.1.t163.f5"
-if (!exists("use_pi_cold"))   use_pi_cold = false
-if (!exists("pi_cold_100"))   pi_cold_100 = v(1,2,5,10,25,40,60,75,90,95,98,99)[5]
+if (!exists("job_str"))       job_str = "my_run.1.t163.f5"
 if (!exists("mask_bg_biome")) mask_bg_biome = false
 if (!exists("use_epochs"))    use_epochs = true
 if (!exists("n_biomes"))      n_biomes = 4
 if (!exists("n_areas"))       n_areas = 6
 if (!exists("use_bg_biome"))  use_bg_biome = true
 
+# dataset settings
 use_biome           = true
 use_bg              = true
 use_mol             = true
-use_stoch           = true
-mask_rf             = false
-biome_epoch_model   = "const"
-
 if (!use_bg_biome) {
     use_bg = false
     use_biome = false
 }
 
-
+# output settings
 n_gens       = 1e6
 n_burn       = 5e3
 tune_freq    = 50
 sample_freq  = 50
+use_stoch    = true
 under_prior  = false 
 
+# move/monitor indexes
 mni = 1
 mvi = 1
-
 
 #########
 # FILES #
 #########
 
 # set IO
-if (under_prior) {
-    job_str += ".prior_" + under_prior
-}
-if (!use_stoch) { 
-    job_str += ".no_stoch"
-}
-if (!use_epochs) {
-    job_str += ".no_epoch"
-}
-if (mask_rf) {
-    job_str += ".mask_rf"
-}
-if (mask_bg_biome) {
+if (under_prior)    job_str += ".under_prior"
+if (mask_bg_biome)  job_str += ".mask_fossil_states"
+if (!use_biome)     job_str += ".no_biome"
+if (!use_bg)        job_str += ".no_bg"
+if (!use_epochs)    job_str += ".no_epoch"
+if (n_biomes == 2)  job_str += ".n_biomes_2"
+if (!use_stoch)     job_str += ".no_stoch"
 
-    job_str += ".mask_fossil_states"
-}
-if (use_pi_cold) {
-    job_str += ".pi_cold_" + pi_cold_100
-}
-
-if (n_biomes == 2) {
-    job_str += ".n_biomes_2"
-}
-
-if (!use_biome) {
-    job_str += ".no_biome"
-}
-
-if (!use_bg) {
-    job_str += ".no_bg"
-}
-
+# filepaths
 fp          = "/Users/mlandis/projects/gh_vib_div/"
 in_fp       = fp + "data/"
 code_fp     = fp + "code/"
 out_fp      = fp + "output/job_190916/"
 
+# filenames
 backbone_fn  = "viburnum.backbone.tre"
 init_fn      = "viburnum.init.tre"
 taxa_fn      = "viburnum.taxa.tsv"
@@ -87,11 +61,13 @@ bg_times_fn  = "viburnum.bg.times.txt"
 mol_fn       = "viburnum.mol.nex"
 intervals_fn = "viburnum.fossil_intervals.tsv"
 
+# use different dataset if we wish to mask all biogeo/biome states
 if (mask_bg_biome) {
     range_fn     = "viburnum.no_fossil.range.n"+n_areas+".nex"
     biome_fn     = "viburnum.no_fossil.biome.n"+n_biomes+".nex"
 }
 
+# set output string
 out_fn  = job_str
 
 ########
@@ -112,12 +88,12 @@ tree_backbone = readTrees(in_fp + backbone_fn)
 
 # biogeo
 dat_bg_n <- readDiscreteCharacterData(file=in_fp+range_fn)
-n_areas = 6
+n_areas   = 6
 max_areas = 2
-n_states = 0
+n_states  = 0
 for (k in 0:max_areas) n_states += choose(n_areas, k)
 
-times_bg = readDataDelimitedFile(file=in_fp+bg_times_fn, header=true, delimiter=",")
+times_bg    = readDataDelimitedFile(file=in_fp+bg_times_fn, header=true, delimiter=",")
 n_epochs_bg = times_bg.size()
 
 for (i in 1:n_epochs_bg) {
@@ -136,54 +112,68 @@ n_parts = dat_mol.size()
 # MODEL #
 #########
 
+# Defines clade constrains for 5 fossil taxa
 source("clade_fossils.Rev")
-source("model_tree_fossil.Rev")
-if (use_bg) {
-    source("model_biogeo.Rev")
-}
-if (use_biome) {
-    source("model_biome.Rev")
-}
-if (use_mol)    source("model_mol.Rev")
 
+# Defines the tree model:
+# a constant-rate fossilized-birth death process with clade constraints
+# for the Stage 1 RADseq relationships, 5 fossil taxa, and 10 unsequenced
+# extant taxa
+source("model_tree_fossil.Rev")
+
+# Defines the range evolution model:
+# DEC for six regions using a simple time-stratified model of connectivity
+# in dispersal rates between adjacent regions are greater than or equal to
+# rates between non-adjacent regions. Probabilities for allopatry/sympatry
+# are estimated from the data
+if (use_bg) source("model_biogeo.Rev")
+
+# Defines the biome evolution model:
+# Q matrix for four biomes. All transitions are allowed. Rates are constant.
+if (use_biome) source("model_biome.Rev")
+
+# Defines the molecular evolution model:
+# Concatenated and partitioned analysis. Each partition evolves under
+# a HKY + Gamma4 substitution model. All partitions share a common
+# set of UCLN branch rates.
+if (use_mol)    source("model_mol.Rev")
 
 # add monitors
 mn[mni++] = mnScreen(root_age,tree_length,t,printgen=1)
 mn[mni++] = mnModel(printgen=sample_freq,filename=out_fp + out_fn + ".model.log", version=false)
 mn[mni++] = mnFile(tree, printgen=sample_freq,filename=out_fp + out_fn + ".tre", version=false)
 
+# ancestral state estimates
 if (use_bg) {
     mn[mni++] = mnJointConditionalAncestralState(filename=out_fp+out_fn+".bg.states.txt", printgen=sample_freq, tree=tree, ctmc=m_bg, type="Standard", withTips=true, withStartStates=true)
-    if (use_stoch) {
-        mn[mni++] = mnStochasticCharacterMap(filename=out_fp+out_fn+".bg.stoch_map.txt", printgen=sample_freq, ctmc=m_bg)
-    }
 }
 if (use_biome) {
     mn[mni++] = mnJointConditionalAncestralState(filename=out_fp+out_fn+".biome.states.txt", printgen=sample_freq, tree=tree, ctmc=m_biome, type="Standard", withTips=true, withStartStates=false)
-    if (use_stoch) {
+}
+
+# stochastic mapping
+if (use_stoch) {
+    if (use_bg) {
+        mn[mni++] = mnStochasticCharacterMap(filename=out_fp+out_fn+".bg.stoch_map.txt", printgen=sample_freq, ctmc=m_bg)
+    }
+    if (use_biome) {
         mn[mni++] = mnStochasticCharacterMap(filename=out_fp+out_fn+".biome.stoch_map.txt", printgen=sample_freq, ctmc=m_biome)
     }
 }
 
+# compose model
+mdl = model(tree)
 
-"pre-model"
-# make model
-mdl=model(tree)
+# build MCMC object
+ch = mcmc(mdl,mn,mv)
 
-"pre-mcmc" 
-ch=mcmc(mdl,mn,mv)
-#ch.burnin(n_burn, tuningInterval=tune_freq)
-
-
-# free some memory
+# free some memory (generally not necesssary)
 clear(dat_mol)
 clear(dat_bg_n)
 clear(dat_biome)
 
-
+# run the analysis
 ch.run(n_gens, underPrior=under_prior)
-
-
 
 #q()
 

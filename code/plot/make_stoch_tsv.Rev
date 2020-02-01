@@ -1,26 +1,25 @@
 #!/usr/bin/rb
 
+fn = "out.2.t163.f5.mask_fossil_states"
 if (!exists("fn")) fn = "out.1.t163.f5"
-if (!exists("fp")) fp = "/Users/mlandis/projects/vib_div/"
+if (!exists("fp")) fp = "../../" #/Users/mlandis/projects/vib_div/"
 
 out_fp = fp + "output/"
 biome_fn = fn + ".biome"
 bg_fn = fn + ".bg"
 
-
-
-# the tree to summarize results over
-#tree = readTrees(tree_fn)[1]
+# burn-in
+f_burn = 0.0
 
 # MCC tree
-tree_trace=readTreeTrace(out_fp+fn+".tre")
-tree_trace.setBurnin(0.5)
+tree_trace=readTreeTrace(out_fp+fn)
+tree_trace.setBurnin(f_burn)
 mcc_tree = mccTree(trace=tree_trace, file=out_fp+fn+".mcc.tre")
 
 # read in tree trace -- note we only need this when the tree 
 # and ancestral states are jointly estimated
-anc_state_tree_trace = readAncestralStateTreeTrace(out_fp+fn+".tre") 
-anc_state_tree_trace.setBurnin(0.5)
+anc_state_tree_trace = readAncestralStateTreeTrace(out_fp+fn+".trees") 
+anc_state_tree_trace.setBurnin(f_burn)
 
 # read in character map trace files
 bg_anc_state_trace = readAncestralStateTrace(out_fp+bg_fn+".stoch_map.txt") 
@@ -30,7 +29,7 @@ biome_anc_state_trace = readAncestralStateTrace(out_fp+biome_fn+".stoch_map.txt"
 #characterMapTree(tree=mcc_tree, anc_state_trace, out_fn+".char.tree", out_fn+".posteriors.tree", num_time_slices=500, burnin=0.5)
 
 # create a file that summarizes the sampled stochastically mapped transitions
-summarizeCharacterMaps(tree_trace=anc_state_tree_trace, character_map_trace_vector=bg_anc_state_trace, out_fp+bg_fn+".history.tsv", burnin=0.5)
-summarizeCharacterMaps(tree_trace=anc_state_tree_trace, character_map_trace_vector=biome_anc_state_trace, out_fp+biome_fn+".history.tsv", burnin=0.5)
+summarizeCharacterMaps(tree_trace=anc_state_tree_trace, character_map_trace_vector=bg_anc_state_trace, out_fp+bg_fn+".history.tsv", burnin=f_burn)
+summarizeCharacterMaps(tree_trace=anc_state_tree_trace, character_map_trace_vector=biome_anc_state_trace, out_fp+biome_fn+".history.tsv", burnin=f_burn)
 
 quit()
