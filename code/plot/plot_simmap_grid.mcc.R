@@ -2,7 +2,7 @@ library(plotrix)
 library(phytools)
 source("vib_div_util.R")
 
-base_fn = "out.1.t163.f5.mask_fossil_states.bg"
+#base_fn = "out.1.t163.f5.mask_fossil_states.bg"
 #base_fn = "out.1.t163.f5.bg"
 
 # IO
@@ -13,7 +13,7 @@ col_fn  = paste0(plot_fp, "range_colors.n6.txt")
 plot_fn = paste0(fp, "code/plot/fig/figSX_",base_fn,".for_mcc._grid.pdf",sep="")
 
 # plotting settings
-pdf(plot_fn, height=17, width=3.5)
+#pdf(plot_fn, height=17, width=3.5)
 grid = c(4,1)
 par(mfrow=grid)
 

@@ -500,6 +500,8 @@ make_lstt_dat = function(state_bins, ages, min_sample=510) {
         }
     }
     
+    print(min_sample)
+    
     # prepare column values
     d2         = data.frame(d1, stringsAsFactors=FALSE)
     d2$age     = as.numeric(d2$age)
@@ -510,7 +512,6 @@ make_lstt_dat = function(state_bins, ages, min_sample=510) {
     # multinomial confidence metric (SK Ernst)
     biome_conf = t(apply( state_bins, 3, colSums))
     bg_conf    = t(apply( state_bins, 3, rowSums))
-    min_sample = 510
     for (i in 1:n_bins) {
         for (j in 1:n_biomes) {
             if (biome_conf[i,j] > min_sample) { 
@@ -532,6 +533,7 @@ make_lstt_dat = function(state_bins, ages, min_sample=510) {
     d2_ages = unique(d2$age)
     d2_bg_trunc = d2
     d2_biome_trunc = d2
+    print(d2_bg_trunc)
     
     for (i in 1:length(d2_ages)) {
         for (j in 1:n_areas) {
@@ -991,3 +993,34 @@ plotSimmap.vib_div = function (tree, colors = NULL, fsize = 1, ftype = "reg", lw
     }
 }
 
+
+
+add_epoch_times_lstt <- function( p, max_age, x_offset=0, dy=0.1 ) {
+    
+    dy2 = 0.2 #dy+0.075
+    max_x = 0# max(p$data$x)
+    max_y = 0 #max(p$data$y)
+    epoch_names = c("Late\nCretaceous","Paleocene","Early\nEocene","Mid/Late\nEocene","Oligocene","Early\nMiocene","Mid/Late\nMiocene","Recent")
+    #epoch_names = c("Late\nCretaceous","Paleogene","Early\nEocene","Mid/Late\nEocene","Oligocene","Early\nMiocene","Mid/Late\nMiocene","Recent")
+  
+    #box = geom_rect( xmin=-66, xmax=-55, ymin=-.15, ymax=0, fill="gray" )
+    #p1s = append_layers(p1s, box, position = "bottom")
+
+    x_pos = max_x-c(max_age, 65, 56, 48, 34, 23, 16, 5.3, 0)
+    y_pos = rep(max_y, length(x_pos))
+    x_pos_mid = ( x_pos[1:(length(x_pos)-1)] + x_pos[2:length(x_pos)] ) / 2 
+
+    for (k in 2:(length(x_pos))) {
+        box_col = "gray92"
+        if (k %% 2 == 0) box_col = "white"
+        box = geom_rect( xmin=x_pos[k-1], xmax=x_pos[k], ymin=0-dy2, ymax=y_pos[k], fill=box_col )
+        p = append_layers(p, box, position = "bottom")
+    }
+    for (k in 1:length(epoch_names)) {
+        print(x_pos_mid[k])
+        print(epoch_names[k])
+        p = p + annotate("text", x=-x_pos_mid[k], y=0-dy, label=epoch_names[k], hjust=0.5, size=2.5)
+    }
+    return(p)
+
+}

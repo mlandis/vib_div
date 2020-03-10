@@ -1,20 +1,26 @@
 library(RevGadgets)
+library(cowplot)
 library(ggtree)
 library(ggimage)
 
 source("vib_div_util.R")
 
+# Files
 fp      = "../../"
-#base_fn = "out.2.t163.f5.mask_fossil_states"
-base_fn = "out.1.t163.f5"
+base_fn = "out.2.t163.f5.mask_fossil_states"; iterations = 60000 + (0:5)*50
+#base_fn = "out.1.t163.f5"; iterations = 44000 + (0:5)*50
 out_fp  = paste(fp, "output/", sep="")
 plot_fp = paste(fp, "code/plot/fig/", sep="")
 out_str = paste( base_fn, ".biome", sep="" )
 tree_fn = paste(out_fp, out_str, ".ase.tre", sep="")
-plot_fn = paste(plot_fp, "fig5_", out_str,".ase.pdf",sep="")
 
+# add simmap to margin?
+plot_simmap = TRUE
+#iterations = 44000 + (0:5)*50
+#iterations = c(99000, 99050, 99100, 99150, 99200, 99250)
+
+# set up state labels
 n_biomes = 4
-
 if (n_biomes == 4) {
     st_lbl = list("0"="Tropical",
                   "1"="Warm Temp.",
@@ -30,6 +36,8 @@ if (n_biomes == 4) {
 }
 names(st_colors) = st_lbl
 
+# Build figure
+cat("Processing...\n")
 
 phy = read.nexus(tree_fn)
 phy = fix_vib_tip(phy)
@@ -48,8 +56,8 @@ zz=plot_ancestral_states(tree_file=tree_fn,
                       tip_label_offset=0.5,
                       xlim_visible=c(0,70),
                       show_posterior_legend=T,
-                      node_pie_diameter=4.5,
-                      tip_pie_diameter=3.6,
+                      node_pie_diameter=4.0,
+                      tip_pie_diameter=3.0,
                       pie_nudge_x=0.2,
                       pie_nudge_y=0.2,
                       alpha=1)
@@ -110,14 +118,29 @@ for (i in 1:nrow(clade_df)) {
 
 # correct legend fill
 p1 = p1 + theme(plot.title = element_text(size=18, face="bold"),
-                legend.position=c(0.07, 0.96),
+                legend.position=c(0.02, 0.98),
+                legend.justification=c("left", "top"),
                 legend.key = element_blank(),
                 axis.line = element_line(colour = "black"))
 
 p1 = p1 + guides(colour=guide_legend(title="Biome", override.aes=list(size=5)))
 
 # fix run-on x-axis??
-
-pdf(height=18, width=10, file=plot_fn)
-print(p1)
-dev.off()
+if (plot_simmap) {
+    source("plot_simmap_grid.biome.R")
+    pr1 = recordPlot() 
+    dev.off()
+    ps1 = plot_grid(NULL, pr1, NULL, NULL, ncol=2, nrow=2, rel_heights=c(17,1), rel_widths=c(1.5,5))
+    #ps3 = plot_grid(NULL, ps2, ncol=2, nrow=2, rel_widths=c(1.5,5))
+    #print(ps2)
+    #psd = ggdraw(ps)
+    pg = plot_grid(p1, ps1, ncol=2, axis="tr", align="h", rel_widths = c(12,3), labels=c("A)","B)"))
+    plot_combine_fn = paste0(plot_fp, "fig5_", out_str,".ase_stoch.pdf")
+    pdf(file=plot_combine_fn, height=18, width=18*(8.5/11))
+    print(pg)
+    dev.off()
+} else {
+    pdf(file=plot_fn, height=18, width=12)
+    print(p2)
+    dev.off()
+}

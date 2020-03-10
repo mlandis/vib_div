@@ -1,19 +1,20 @@
 library(plotrix)
 library(phytools)
+source("vib_div_util.R")
 
-base_fn = "out.1.t163.f5.mask_fossil_states.biome"
+#base_fn = "out.1.t163.f5.mask_fossil_states.biome"
 #base_fn = "out.1.t163.f5.biome"
     
 # IO
 fp      = "../../"
 fn      = paste0("output/", base_fn)
-phy_fn  = paste0(fp, fn, ".stoch_map.txt")
+phy_fn  = paste0(fp, fn, ".biome.stoch_map.txt")
 col_fn  = paste0(fp, "code/plot/biome_colors.n4.txt")
-plot_fn = paste0(fp, "code/plot/fig/figSX_",base_fn,".stoch_grid.pdf",sep="")
+#plot_fn = paste0(fp, "code/plot/fig/figSX_",base_fn,".stoch_grid.pdf",sep="")
 
 # plotting settings
-pdf(plot_fn, height=17, width=3.5)
-grid = c(4,1)
+#pdf(plot_fn, height=17, width=3.5)
+grid = c(length(iterations),1)
 par(mfrow=grid)
 
 # read data
@@ -24,7 +25,7 @@ dat_ch  = read.table(phy_fn, sep="\t", header=T)
 phy = as.vector(dat_ch[,ncol(dat_ch)])
 
 # iterations to sample
-iterations = c(99000, 99050, 99100, 99150)
+#iterations = c(99000, 99050, 99100, 99150)
 n_it = length(iterations)
 
 # read/plot/append simmap trees
@@ -62,10 +63,10 @@ for (j in 1:n_it) {
     root_age = max(branching.times(sim2))
     xlim = c(0,root_age)
     dx = max(branching.times(sim2))
-    plotSimmap(sim2, cols, fsize=0.3, lwd=3, xlim=xlim,
+    plotSimmap(sim2, cols, fsize=0.3, lwd=2, xlim=xlim,
                    split.vertical=TRUE, direction="rightwards")
   
 
 }
 
-dev.off()
+#dev.off()

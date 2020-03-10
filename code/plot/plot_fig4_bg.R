@@ -1,4 +1,5 @@
 library(RevGadgets)
+library(cowplot)
 library(ggtree)
 library(ggimage)
 
@@ -6,13 +7,17 @@ source("vib_div_util.R")
 
 # Files
 fp = "../../" #/Users/mlandis/projects/vib_div/"
-#base_fn = "out.2.t163.f5.mask_fossil_states"
-base_fn = "out.1.t163.f5"
+base_fn = "out.2.t163.f5.mask_fossil_states"; iterations = 60000 + (0:5)*50
+#base_fn = "out.1.t163.f5"; iterations = 44000 + (0:5)*50
 out_fp = paste(fp, "output/", sep="")
 plot_fp = paste(fp, "code/plot/fig/", sep="")
 out_str = paste( base_fn, ".bg", sep="" )
 tree_fn = paste(out_fp, out_str, ".ase.tre", sep="")
 plot_fn = paste(plot_fp, "fig4_", out_str,".ase.pdf",sep="")
+
+# add simmap to margin?
+plot_simmap = TRUE
+#iterations = 44000 + (0:5)*50
 
 # State labels
 st_lbl = list(
@@ -46,7 +51,7 @@ names(st_colors) = st_lbl
 
 # Build figure
 cat("Processing...\n")
-source("/Users/mlandis/projects/RevGadgets/R/plot_ancestral_states.R")
+#source("/Users/mlandis/projects/RevGadgets/R/plot_ancestral_states.R")
 
 # get tree
 phy = read.nexus(tree_fn)
@@ -68,8 +73,8 @@ zz=plot_ancestral_states(tree_file=tree_fn,
                       xlim_visible=c(0,70),
                       shoulder_label_nudge_x=-0.1,
                       show_posterior_legend=T,
-                      node_pie_diameter=4.5,
-                      tip_pie_diameter=3.7,
+                      node_pie_diameter=4.0,
+                      tip_pie_diameter=3.0,
                       pie_nudge_x=0.2,
                       pie_nudge_y=0.2,
                       alpha=1)
@@ -131,12 +136,29 @@ for (i in 1:nrow(clade_df)) {
 
 # correct legend fill
 p2 = p2 + theme(plot.title = element_text(size=18, face="bold"),
-                legend.position=c(0.07, 0.8985),
+                legend.position=c(0.02, 0.98),
+                legend.justification=c("left", "top"),
                 legend.key = element_blank(),
                 axis.line = element_line(colour = "black"))
 
 p2 = p2 + guides(colour=guide_legend(title="Range", override.aes=list(size=5)))
 
-pdf(height=18, width=10, file=plot_fn)
-print(p2)
-dev.off()
+
+if (plot_simmap) {
+    source("plot_simmap_grid.bg.R")
+    pr2 = recordPlot() 
+    dev.off()
+    ps2 = plot_grid(NULL, pr2, NULL, NULL, ncol=2, nrow=2, rel_heights=c(17,1), rel_widths=c(1.5,5))
+    #ps3 = plot_grid(NULL, ps2, ncol=2, nrow=2, rel_widths=c(1.5,5))
+    #print(ps2)
+    #psd = ggdraw(ps)
+    pg = plot_grid(p2, ps2, ncol=2, axis="tr", align="h", rel_widths = c(12,3), labels=c("A)","B)"))
+    plot_combine_fn = paste0(plot_fp, "fig4_", out_str,".ase_stoch.pdf")
+    pdf(file=plot_combine_fn, height=18, width=18*(8.5/11))
+    print(pg)
+    dev.off()
+} else {
+    pdf(file=plot_fn, height=18, width=12)
+    print(p2)
+    dev.off()
+}

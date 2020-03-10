@@ -2,12 +2,11 @@ library(plotrix)
 library(phytools)
 source("vib_div_util.R")
 
-base_fn = "out.1.t163.f5.bg"
 
 # IO
 fp      = "../../"
 fn      = paste0("output/", base_fn)
-phy_fn  = paste0(fp, fn, ".stoch_map.txt")
+phy_fn  = paste0(fp, base_fn, ".bg.stoch_map.txt")
 plot_fp = paste0(fp, "code/plot/")
 col_fn  = paste0(plot_fp, "range_colors.n6.txt")
 

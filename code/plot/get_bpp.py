@@ -1,11 +1,11 @@
 import dendropy as dp
 import pandas as pd
 
-fp = '/Users/mlandis/projects/vib_div/'
-phy_fn = fp + 'output/out.2.t163.f5.mask_fossil_states.tre'
-#phy_fn = fp + 'output/out.1.t163.f5.tre'
+fp = '/Users/mlandis/projects/gh_vib_div/'
+phy_fn = fp + 'output/out.2.t163.f5.mask_fossil_states.trees'
+#phy_fn = fp + 'output/out.1.t163.f5.trees'
 
-f_burn = 0.25
+f_burn = 0.0
 
 clade_fn = fp + 'code/plot/fossil_clade.tre'
 clade_full = dp.Tree.get_from_path(src=clade_fn, schema='newick')

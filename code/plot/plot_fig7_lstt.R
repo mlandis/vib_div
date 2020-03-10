@@ -11,6 +11,7 @@ source("vib_div_util.R")
 
 # filename prefix
 base_fn = "out.1.t163.f5"
+base_fn = "out.2.t163.f5.mask_fossil_states"
 
 # directories
 fp           = "../../"
@@ -20,7 +21,7 @@ plot_fp      = paste0(fp, "code/plot/fig/", sep="")
 # filenames
 col_bg_fn    = paste0(fp, "code/plot/range_colors.n6.txt")
 col_biome_fn = paste0(fp, "code/plot/biome_colors.n4.txt")
-plot_fn      = paste0(plot_fp, base_fn, ".lstt.pdf")
+plot_fn      = paste0(plot_fp, base_fn, ".lstt_tmp.pdf")
 bg_fn        = paste0(out_fp, base_fn, ".bg.history.tsv")
 biome_fn     = paste0(out_fp, base_fn, ".biome.history.tsv")
 
@@ -54,7 +55,7 @@ D_tol     = 0.05 # how close all sampled LSTT frequencies in a bin must be to th
 alpha_tol = 0.05 # false-positive rate of failing to satisfy the D_tol level
 
 # apply burnin/thinning if desired
-f_burn    = 0.998
+f_burn    = 0 #0.98
 thinby    = 1
 
 ###################
@@ -83,18 +84,23 @@ state_bins= make_bg_biome_bins(stoch_bg_biome, bin_width, iterations, n_areas, n
 
 # Stage 3: create plotting table
 min_sample = calculate_ske(s=Inf,k=n_states,alpha=alpha_tol,D=D_tol)$n
+#min_sample = 1
 plot_dat = make_lstt_dat(state_bins, ages, min_sample)
-plot_dat_bg = plot_dat$bg
-plot_dat_biome = plot_dat$biome
 
-sz=4
+max_time = 75
+plot_dat_bg = plot_dat$bg[ plot_dat$bg$age <= max_time, ]
+plot_dat_biome = plot_dat$biome[ plot_dat$biome$age <= max_time, ]
+
+sz=5
 pbg=list()
 for (i in 1:6) {
     title_i = bg_names[i]
     di = plot_dat_bg[ plot_dat_bg$Area==i & plot_dat_bg$Support > 0, ]
+    di$age = di$age - 0.5
     p2 = ggplot(data = di, aes(fill=Biome, x=age, y=count))
     p2 = p2 + geom_bar(stat="identity",position="fill")
     p2 = p2 + scale_x_continuous("", trans="reverse", limits=c(max_time,0)) #, sec.axis = sec_axis(~ ., name=title_i, breaks=c() ))
+    p2 = p2 + coord_cartesian(ylim=c(1,-0.15))
     p2 = p2 + scale_fill_manual(values=biome_cols, labels = c("Trop.", "Warm", "Cloud", "Cold"), guide="legend")
     p2 = p2 + scale_alpha_continuous(range=c(0,1), guide="legend")
     p2 = p2 + annotate("text", x=max_time/2, y=0.8, label=title_i, colour=bg_label_col[i], size=sz)
@@ -113,7 +119,10 @@ for (i in 1:6) {
                     panel.grid.minor = element_blank(),
                     panel.background = element_blank(),
                     axis.line = element_line(colour = "black"),
-                    legend.position = "none")   
+                    legend.position = "none")  
+    
+    p2 = add_epoch_times_lstt(p2, max_age = 75)
+    
     pbg[[i]] = p2
 }
 
@@ -124,9 +133,11 @@ pbiome=list()
 for (i in 1:4) {
     title_i = biome_names[i]
     di = plot_dat_biome[ plot_dat_biome$Biome==i & plot_dat_biome$Support > 0, ]
+    di$age = di$age - 0.5
     p2 = ggplot(data = di, aes(fill=Area, x=age, y=count))
     p2 = p2 + geom_bar(stat="identity",position="fill")
     p2 = p2 + scale_x_continuous("", trans="reverse", limits=c(max_time,0) )
+    p2 = p2 + coord_cartesian(ylim=c(1,-0.15))
     p2 = p2 + scale_fill_manual(values=area_cols, labels = c("SEAs", "EAs", "Eur", "NAm", "CAm", "SAm"), guide="legend")
     p2 = p2 + scale_alpha_continuous(range = c(0, 1), guide="legend") #, breaks=seq(0,1,by=.5), limits=seq(0,1,by=0.5))
     p2 = p2 + annotate("text", x=max_time/2, y=0.8, label=title_i, colour=biome_label_col[i], size=sz)
@@ -150,6 +161,8 @@ for (i in 1:4) {
                     panel.background = element_blank(),
                     axis.line = element_line(colour = "black"),
                     legend.position = "none")      
+    
+    p2 = add_epoch_times_lstt(p2, max_age = 75)
     pbiome[[i]] = p2
 }
 
@@ -161,7 +174,7 @@ pbiome_2 = add_sub(pbiome_1, "Age (Ma)", vpadding=grid::unit(0,"lines"),y=5, x=0
 
 pboth = plot_grid( plegend_left, pbg_2, pbiome_2, plegend_right, ncol=4, rel_heights=c(1,6,4,2), rel_widths=c(1,3,3,1) )
 
-CairoPDF(  file=plot_fn, width=7, height=7)
+CairoPDF(  file=plot_fn, width=16, height=16)
 print(pboth)
 dev.off()
 
