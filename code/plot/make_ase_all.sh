@@ -10,10 +10,6 @@ echo "fn=\"out.2.t163.f5\";source(\"make_mcc.Rev\");" | rb &
 PIDS+=($!)
 echo "fn=\"out.2.t163.f5.mask_fossil_states\";source(\"make_mcc.Rev\");" | rb &
 PIDS+=($!)
-#echo "fn=\"out.3.t163.f5.n_biomes_2\";source(\"make_mcc.Rev\");" | rb &
-#PIDS+=($!)
-#echo "fn=\"out.3.t163.f5.mask_fossil_states.n_biomes_2\";source(\"make_mcc.Rev\");" | rb &
-#PIDS+=($!)
 
 for pid in "${PIDS[@]}"
 do
