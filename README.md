@@ -5,7 +5,7 @@ This directory contains the main files needed to examine and reproduce results f
 
 Subdirectories:
 - `data` contains the dataset used for the RevBayes analyses.
-- `code` directory contains RevBayes scripts and a subdirectory for plotting (`code/plot`).
-- `output` directory contains our joint posterior estimates for the Complete and Masked analyses as described in the main text.
+- `code` contains RevBayes scripts and a subdirectory for plotting (`code/plot`).
+- `output` contains our joint posterior estimates for the Complete and Masked analyses as described in the main text.
 
 Please feel welcome to contact [michael.landis@wustl.edu](mailto:michael.landis@wustl.edu) with any questions, comments, or just to say hello.
